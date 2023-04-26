@@ -133,21 +133,40 @@ control_constraints = [];
 control_values = [];
 
 % Compute gait for each horizon
+% for i=1: length(intervals_idx)
+%     if mod(intervals_idx(i), 2) == 0
+%         % foot 1 and 4 touching
+%         control_constraint = blkdiag(con_ground, con_air, con_air, con_ground);
+%         control_constraints = blkdiag(control_constraints, control_constraint);
+% 
+%         control_value = [values_ground; values_air; values_air; values_ground];
+%         control_values = [control_values; control_value];
+%     else
+%         % foot 2 and 3 touching
+%         % foot 1 and 4 touching
+%         control_constraint = blkdiag(con_air, con_ground, con_ground, con_air);
+%         control_constraints = blkdiag(control_constraints, control_constraint);
+% 
+%         control_value = [values_air; values_ground; values_ground; values_air];
+%         control_values = [control_values; control_value];
+%     end
+% end
+
 for i=1: length(intervals_idx)
     if mod(intervals_idx(i), 2) == 0
         % foot 1 and 4 touching
-        control_constraint = blkdiag(con_ground, con_air, con_air, con_ground);
+        control_constraint = blkdiag(con_ground, con_ground, con_air, con_ground);
         control_constraints = blkdiag(control_constraints, control_constraint);
 
-        control_value = [values_ground; values_air; values_air; values_ground];
+        control_value = [values_ground; values_ground; values_air; values_ground];
         control_values = [control_values; control_value];
     else
         % foot 2 and 3 touching
         % foot 1 and 4 touching
-        control_constraint = blkdiag(con_air, con_ground, con_ground, con_air);
+        control_constraint = blkdiag(con_ground, con_ground, con_ground, con_ground);
         control_constraints = blkdiag(control_constraints, control_constraint);
 
-        control_value = [values_air; values_ground; values_ground; values_air];
+        control_value = [values_ground; values_ground; values_ground; values_ground];
         control_values = [control_values; control_value];
     end
 end
