@@ -78,9 +78,9 @@ Beq = [A*X_bar; zeros(13, 1); zeros(13, 1); zeros(13, 1); zeros(13, 1); zeros(13
 
 H = blkdiag(Q, Q, Q, Q, Q, Q, Q, Q, Q, Q, R, R, R, R, R, R, R, R, R, R);
 t = x(25);
-v_d = x(26);
-pos_d = p(1)*10*dt*v_d;
-xd = [0; 0; pos_d; 0; 0; .3; 0; 0; 0; 0; 0; 0; 0];
+v_d = 0.5;
+pos_d = (t-0.5)*v_d;
+xd = [0; 0; 0; pos_d; 0; .3; 0; 0; 0; 0; 0; 0; 0];
 
 f = [transpose(-transpose(xd)*Q);
     transpose(-transpose(xd)*Q);
