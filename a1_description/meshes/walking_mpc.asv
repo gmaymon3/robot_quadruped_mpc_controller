@@ -8,6 +8,7 @@ P1 = reshape(x(13:15), [], 1);
 P2 = reshape(x(16:18), [], 1);
 P3 = reshape(x(19:21), [], 1);
 P4 = reshape(x(22:24), [], 1);
+t = x(25)
 
 
 % TODO - GET MASS
@@ -16,7 +17,7 @@ m = 12;
 %Q = diag([5, 5, 5, 320, 320, 57, .1, .1, .1, 1, 1, 1,0]);
 Q = diag([5, 5, 5, 150, 150, 150, .1, .1, .1, .1, .1, .1,0]);
 R = 0.001*eye(12);
-dt = 0.03;
+dt = 0.05;
 
 eul = rotm2eul(Rot); % ZYX
 
@@ -78,7 +79,7 @@ Beq = [A*X_bar; zeros(13, 1); zeros(13, 1); zeros(13, 1); zeros(13, 1); zeros(13
 
 H = blkdiag(Q, Q, Q, Q, Q, Q, Q, Q, Q, Q, R, R, R, R, R, R, R, R, R, R);
 
-xd = [0; 0; pi/6; 0; 0; .3; 0; 0; 0; 0; 0; 0; 0];
+xd = [0; 0; 0; 0; 0; .3; 0; 0; 0; 0; 0; 0; 0];
 
 f = [transpose(-transpose(xd)*Q);
     transpose(-transpose(xd)*Q);
@@ -102,7 +103,7 @@ f = [transpose(-transpose(xd)*Q);
     zeros(12, 1);];
 
 % Compute Intervals for this set of horizons
-intervals = [0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2, 2.2, 2.4, 2.6, 2.8, 3, 3.2, 3.4, 3.6, 3.8, 4, 4.2, 4.4, 4.6, 4.8, 5];
+intervals = 0:0.2:5;
 
 t = x(25);
 
@@ -152,24 +153,43 @@ for i=1: length(intervals_idx)
     end
 end
 
+% for i=1: length(intervals_idx)
+%     if mod(intervals_idx(i), 2) == 0
+%         % foot 1 and 4 touching
+%         control_constraint = blkdiag(con_ground, con_ground, con_air, con_ground);
+%         control_constraints = blkdiag(control_constraints, control_constraint);
+% 
+%         control_value = [values_ground; values_ground; values_air; values_ground];
+%         control_values = [control_values; control_value];
+%     else
+%         % foot 2 and 3 touching
+%         % foot 1 and 4 touching
+%         control_constraint = blkdiag(con_ground, con_ground, con_ground, con_ground);
+%         control_constraints = blkdiag(control_constraints, control_constraint);
+% 
+%         control_value = [values_ground; values_ground; values_ground; values_ground];
+%         control_values = [control_values; control_value];
+%     end
+% end
+
 Ac = [zeros(240, 130) control_constraints];
 
 bc = control_values;
 
-con = [0 0 1;
-      0 0 -1;
-      1 0 -.5;
-      -1 0 -.5;
-      0 1  -.5;
-      0 -1 -.5];
-
-control_constraint = blkdiag(con, con, con, con);
-
-control_constraints = blkdiag(control_constraint, control_constraint, control_constraint, control_constraint, control_constraint, control_constraint, control_constraint, control_constraint, control_constraint, control_constraint);
-
-Ac = [zeros(240, 130) control_constraints];
-
-bc = repmat([500; -10; 0; 0; 0; 0], 4*10, 1);
+% con = [0 0 1;
+%       0 0 -1;
+%       1 0 -.5;
+%       -1 0 -.5;
+%       0 1  -.5;
+%       0 -1 -.5];
+% 
+% control_constraint = blkdiag(con, con, con, con);
+% 
+% control_constraints = blkdiag(control_constraint, control_constraint, control_constraint, control_constraint, control_constraint, control_constraint, control_constraint, control_constraint, control_constraint, control_constraint);
+% 
+% Ac = [zeros(240, 130) control_constraints];
+% 
+% bc = repmat([500; -10; 0; 0; 0; 0], 4*10, 1);
 
 options = optimoptions('quadprog', 'Display', 'off');
 
