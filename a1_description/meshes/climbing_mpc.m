@@ -81,14 +81,14 @@ t = x(25);
 vx_d = x(26);
 T_stance = x(29);
 pos_xd = P(1)+ 10*dt*vx_d;
-stair_start_pos = 0.22; 
+stair_start_pos = 0.3; 
 if P(1) > stair_start_pos
     pos_zd = 0.3+(P(1)-stair_start_pos)*0.5;
     % 0.5 is the slope of the climb
-    pitch_d = -0.3;
+    pitch_d = deg2rad(-26.56);
 else 
     pos_zd = 0.3;
-    pitch_d = 0;
+    pitch_d = deg2rad(-26.56);
 end
 xd = [0; pitch_d; 0; pos_xd; 0; pos_zd; 0; 0; 0; 0; 0; 0; 0];
 
