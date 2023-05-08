@@ -83,12 +83,12 @@ T_stance = x(29);
 pos_xd = P(1)+ 10*dt*vx_d;
 stair_start_pos = 0.3; 
 if P(1) > stair_start_pos
-    pos_zd = 0.3+(P(1)-stair_start_pos)*0.5;
+    pos_zd = 0.3+(P(1)-stair_start_pos)*.2;
     % 0.5 is the slope of the climb
-    pitch_d = deg2rad(-26.56);
+    pitch_d = deg2rad(-20.56);
 else 
     pos_zd = 0.3;
-    pitch_d = deg2rad(-26.56);
+    pitch_d = deg2rad(-20.56);
 end
 xd = [0; pitch_d; 0; pos_xd; 0; pos_zd; 0; 0; 0; 0; 0; 0; 0];
 
@@ -144,14 +144,14 @@ control_values = [];
 
 % Compute gait for each horizon
 for i=1: length(intervals_idx)
-    if mod(intervals_idx(i), 2) == 0
+    if mod(intervals_idx(i), 3) == 0
         % foot 1 and 4 touching
         control_constraint = blkdiag(con_ground, con_air, con_air, con_ground);
         control_constraints = blkdiag(control_constraints, control_constraint);
 
         control_value = [values_ground; values_air; values_air; values_ground];
         control_values = [control_values; control_value];
-    else
+    elseif mod(intervals_idx(i), 3) == 1
         % foot 2 and 3 touching
         % foot 1 and 4 touching
         control_constraint = blkdiag(con_air, con_ground, con_ground, con_air);
@@ -159,8 +159,61 @@ for i=1: length(intervals_idx)
 
         control_value = [values_air; values_ground; values_ground; values_air];
         control_values = [control_values; control_value];
+    else
+        % foot 2 and 3 touching
+        % foot 1 and 4 touching
+        control_constraint = blkdiag(con_ground, con_ground, con_ground, con_ground);
+        control_constraints = blkdiag(control_constraints, control_constraint);
+
+        control_value = [values_ground; values_ground; values_ground; values_ground];
+        control_values = [control_values; control_value];
     end
 end
+
+% Compute gait for each horizon
+% for i=1: length(intervals_idx)
+%     if mod(intervals_idx(i), 5) == 0
+%         % foot 1 and 4 touching
+%         control_constraint = blkdiag(con_air, con_ground, con_ground, con_ground);
+%         control_constraints = blkdiag(control_constraints, control_constraint);
+% 
+%         control_value = [values_air; values_ground; values_ground; values_ground];
+%         control_values = [control_values; control_value];
+%     elseif mod(intervals_idx(i), 5) == 1
+%         % foot 2 and 3 touching
+%         % foot 1 and 4 touching
+%         control_constraint = blkdiag(con_ground, con_air, con_ground, con_ground);
+%         control_constraints = blkdiag(control_constraints, control_constraint);
+% 
+%         control_value = [values_ground; values_air; values_ground; values_ground];
+%         control_values = [control_values; control_value];
+%     elseif mod(intervals_idx(i), 5) == 2
+%         % foot 2 and 3 touching
+%         % foot 1 and 4 touching
+%         control_constraint = blkdiag(con_ground, con_ground, con_air, con_ground);
+%         control_constraints = blkdiag(control_constraints, control_constraint);
+% 
+%         control_value = [values_ground; values_ground; values_air; values_ground];
+%         control_values = [control_values; control_value];
+%     elseif mod(intervals_idx(i), 5) == 3
+%         % foot 2 and 3 touching
+%         % foot 1 and 4 touching
+%         control_constraint = blkdiag(con_ground, con_ground, con_ground, con_air);
+%         control_constraints = blkdiag(control_constraints, control_constraint);
+% 
+%         control_value = [values_ground; values_ground; values_ground; values_air];
+%         control_values = [control_values; control_value];
+%     else
+%         % foot 2 and 3 touching
+%         % foot 1 and 4 touching
+%         control_constraint = blkdiag(con_ground, con_ground, con_ground, con_ground);
+%         control_constraints = blkdiag(control_constraints, control_constraint);
+% 
+%         control_value = [values_ground; values_ground; values_ground; values_ground];
+%         control_values = [control_values; control_value];
+%     end
+% end
+
 
 % for i=1: length(intervals_idx)
 %     if mod(intervals_idx(i), 2) == 0

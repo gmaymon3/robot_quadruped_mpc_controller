@@ -19,7 +19,7 @@ RL_hip_pos = hip_data(7:9);
 RR_hip_pos = hip_data(10:12);
 y_offset = 0.09;
 x_offset_front = 0; 
-x_offset_rear_up = 0.11; 
+x_offset_rear_up = 0; 
 x_offset_rear_norm = 0.02; 
 
 % Find K_step - this value can be tuned with z_com_desired
@@ -58,20 +58,18 @@ vec_FL_vy = zeros(1,length(vec_leng));
 vec_FL_vz = zeros(1,length(vec_leng));
 t_vec = zeros(1,length(vec_leng));
 
-
-if FL_foot_pos(3)+z_height > COM_pos(3)
-    z_height = COM_pos(3)-(FL_foot_pos(3)-0.03);
+if FL_foot_pos(3)+z_height > COM_pos(3) -.1
+    z_height = .01;
 else
     z_height = 0.12; 
 end
 
-FL_waypoints = [FL_foot_pos(1),FL_foot_pos(2),FL_foot_pos(3);  % Initial position
-             FL_foot_pos(1),FL_foot_pos(2),FL_foot_pos(3)+z_height; 
-             FL_p_foot_desired_end(1),FL_p_foot_desired_end(2),FL_foot_pos(3)+z_height; 
-             FL_p_foot_desired_end(1),FL_p_foot_desired_end(2),FL_p_foot_desired_end(3);
-             FL_p_foot_desired_end(1),FL_p_foot_desired_end(2),FL_p_foot_desired_end(3)];   % Final position
-
-toa = [0,T_stance*3/8,T_stance*4/8,T_stance*7/8,T_stance];
+if FL_p_foot_desired_end(3) > FL_foot_pos(3) + .05 % if stepping on step
+    [FL_waypoints, toa] = square_trajectory(FL_foot_pos, FL_p_foot_desired_end, z_height, T_stance);
+elseif FL_p_foot_desired_end(3) < FL_foot_pos(3) - .05 
+    [FL_waypoints, toa] = triangle_trajectory(FL_foot_pos, FL_foot_pos, z_height, T_stance);
+end
+    [FL_waypoints, toa] = triangle_trajectory(FL_foot_pos, FL_p_foot_desired_end, z_height, T_stance);
 
 trajectory = waypointTrajectory(FL_waypoints,TimeOfArrival=toa,SampleRate=1000,SamplesPerFrame=1);
 
@@ -114,19 +112,19 @@ vec_FR_vx = zeros(1,length(vec_leng));
 vec_FR_vy = zeros(1,length(vec_leng));
 vec_FR_vz = zeros(1,length(vec_leng));
 
-if FR_foot_pos(3)+z_height > COM_pos(3)
-    z_height = COM_pos(3)-(FR_foot_pos(3)-0.03);
+if FR_foot_pos(3)+z_height > COM_pos(3) -.1
+    z_height = .01;
 else
     z_height = 0.12; 
 end
 
-FR_waypoints = [FR_foot_pos(1),FR_foot_pos(2),FR_foot_pos(3);  % Initial position
-             FR_foot_pos(1),FR_foot_pos(2),FR_foot_pos(3)+z_height; 
-             FR_p_foot_desired_end(1),FR_p_foot_desired_end(2),FR_foot_pos(3)+z_height; 
-             FR_p_foot_desired_end(1),FR_p_foot_desired_end(2),FR_p_foot_desired_end(3);
-             FR_p_foot_desired_end(1),FR_p_foot_desired_end(2),FR_p_foot_desired_end(3)];   % Final position
+if FR_p_foot_desired_end(3) > FR_foot_pos(3) + .05 
+    [FR_waypoints, toa] =square_trajectory(FR_foot_pos, FR_p_foot_desired_end, z_height, T_stance);
+elseif FR_p_foot_desired_end(3) < FR_foot_pos(3) - .05 
+    [FR_waypoints, toa] = triangle_trajectory(FR_foot_pos, FR_foot_pos, z_height, T_stance);
+end
+    [FR_waypoints, toa] = triangle_trajectory(FR_foot_pos, FR_p_foot_desired_end, z_height, T_stance);
 
-toa = [0,T_stance*3/8,T_stance*4/8,T_stance*7/8,T_stance];
 
 trajectory = waypointTrajectory(FR_waypoints,TimeOfArrival=toa,SampleRate=1000,SamplesPerFrame=1);
 
@@ -174,19 +172,19 @@ vec_RR_vx = zeros(1,length(vec_leng));
 vec_RR_vy = zeros(1,length(vec_leng));
 vec_RR_vz = zeros(1,length(vec_leng));
 
-if RR_foot_pos(3)+z_height > COM_pos(3)
-    z_height = COM_pos(3)-(RR_foot_pos(3)-0.03);
+if RR_foot_pos(3)+z_height > COM_pos(3) -.1
+    z_height = .01;
 else
     z_height = 0.12; 
 end
 
-RR_waypoints = [RR_foot_pos(1),RR_foot_pos(2),RR_foot_pos(3);  % Initial position
-             RR_foot_pos(1),RR_foot_pos(2),RR_foot_pos(3)+z_height; 
-             RR_p_foot_desired_end(1),RR_p_foot_desired_end(2),RR_foot_pos(3)+z_height; 
-             RR_p_foot_desired_end(1),RR_p_foot_desired_end(2),RR_p_foot_desired_end(3);
-             RR_p_foot_desired_end(1),RR_p_foot_desired_end(2),RR_p_foot_desired_end(3)];   % Final position
-
-toa = [0,T_stance*3/8,T_stance*4/8,T_stance*7/8,T_stance];
+if RR_p_foot_desired_end(3) > RR_foot_pos(3) + .05 
+    [RR_waypoints, toa] = square_trajectory(RR_foot_pos, RR_p_foot_desired_end, z_height, T_stance);
+elseif RR_p_foot_desired_end(3) < RR_foot_pos(3) - .05 
+    [RR_waypoints, toa] = triangle_trajectory(RR_foot_pos, RR_foot_pos, z_height, T_stance);
+else
+    [RR_waypoints, toa] = triangle_trajectory(RR_foot_pos, RR_p_foot_desired_end, z_height, T_stance);
+end
 
 trajectory = waypointTrajectory(RR_waypoints,TimeOfArrival=toa,SampleRate=1000,SamplesPerFrame=1);
 
@@ -232,19 +230,19 @@ vec_RL_vx = zeros(1,length(vec_leng));
 vec_RL_vy = zeros(1,length(vec_leng));
 vec_RL_vz = zeros(1,length(vec_leng));
 
-if RL_foot_pos(3)+z_height > COM_pos(3)
-    z_height = COM_pos(3)-(RL_foot_pos(3)-0.03);
+if RL_foot_pos(3)+z_height > COM_pos(3) -.1
+    z_height = 0.01;
 else
     z_height = 0.12; 
 end
 
-RL_waypoints = [RL_foot_pos(1),RL_foot_pos(2),RL_foot_pos(3);  % Initial position
-             RL_foot_pos(1),RL_foot_pos(2),RL_foot_pos(3)+z_height; 
-             RL_p_foot_desired_end(1),RL_p_foot_desired_end(2),RL_foot_pos(3)+z_height; 
-             RL_p_foot_desired_end(1),RL_p_foot_desired_end(2),RL_p_foot_desired_end(3);
-             RL_p_foot_desired_end(1),RL_p_foot_desired_end(2),RL_p_foot_desired_end(3)];   % Final position
-
-toa = [0,T_stance*3/8,T_stance*4/8,T_stance*7/8,T_stance];
+if RL_p_foot_desired_end(3) > RL_foot_pos(3) + .05 
+    [RL_waypoints, toa] = square_trajectory(RL_foot_pos, RL_p_foot_desired_end, z_height, T_stance);
+elseif RL_p_foot_desired_end(3) < RL_foot_pos(3) - .05 
+    [RL_waypoints, toa] = triangle_trajectory(RL_foot_pos, RL_foot_pos, z_height, T_stance);
+else
+    [RL_waypoints, toa] = triangle_trajectory(RL_foot_pos, RL_p_foot_desired_end, z_height, T_stance);
+end
 
 trajectory = waypointTrajectory(RL_waypoints,TimeOfArrival=toa,SampleRate=1000,SamplesPerFrame=1);
 
@@ -265,4 +263,22 @@ end
 %   Detailed explanation goes here
 u=[vec_FL_px,vec_FL_py,vec_FL_pz,vec_FL_vx,vec_FL_vy,vec_FL_vz,vec_RL_px,vec_RL_py,vec_RL_pz,vec_RL_vx,vec_RL_vy,vec_RL_vz,vec_FR_px,vec_FR_py,vec_FR_pz,vec_FR_vx,vec_FR_vy,vec_FR_vz,vec_RR_px,vec_RR_py,vec_RR_pz,vec_RR_vx,vec_RR_vy,vec_RR_vz,t_vec]';
 
+end
+
+function [waypoints, toa] = square_trajectory(foot_pos, p_foot_desired_end, z_height, T_stance)
+    waypoints = [foot_pos(1),foot_pos(2),foot_pos(3);  % Initial position
+             foot_pos(1),foot_pos(2),foot_pos(3)+z_height; 
+             p_foot_desired_end(1),p_foot_desired_end(2),foot_pos(3)+z_height; 
+             p_foot_desired_end(1),p_foot_desired_end(2),p_foot_desired_end(3);
+             p_foot_desired_end(1),p_foot_desired_end(2),p_foot_desired_end(3)];   % Final position
+
+    toa = [0,T_stance*3/8,T_stance*4/8,T_stance*7/8,T_stance];
+end
+
+function [waypoints, toa] = triangle_trajectory(foot_pos, p_foot_desired_end, z_height, T_stance)
+    waypoints = [foot_pos(1),foot_pos(2),foot_pos(3);  % Initial position
+             (p_foot_desired_end(1) - foot_pos(1))/2 + foot_pos(1),(p_foot_desired_end(2) - foot_pos(2))/2 + foot_pos(2),foot_pos(3)+z_height;  
+             p_foot_desired_end(1),p_foot_desired_end(2),p_foot_desired_end(3)];   % Final position
+
+    toa = [0,T_stance/2, T_stance];
 end
